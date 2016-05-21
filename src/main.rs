@@ -27,7 +27,7 @@ struct Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let options: String = self.s.join(", ");
-        write!(f, "{} [{}] -> {}", self.word, self.code, options)
+        write!(f, "{} [{}:{} code:{}]. Hints: {}", self.word, self.row + 1, self.col, self.code, options)
     }
 }
 
