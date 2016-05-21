@@ -1,0 +1,7 @@
+[package]
+name = "yaspeller"
+version = "0.1.0"
+authors = ["Anton Davydov <antondavydov.o@gmail.com>"]
+
+[dependencies]
+hyper = "0.9.5"
