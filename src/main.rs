@@ -7,8 +7,11 @@ use std::io::prelude::*;
 use hyper::Url;
 use hyper::Client;
 
+static SPELL_URL: &'static str = "http://speller.yandex.net/services/spellservice.json/checkText";
+
 fn main() {
     let args: Vec<String> = env::args().collect();
+
     let text = read_text(args[1].to_string());
     println!("{}", check_text(text));
 }
@@ -26,7 +29,8 @@ fn read_text(path: String) -> String {
 
 fn check_text(text: String) -> String {
     let client = Client::new();
-    let mut url = Url::parse("http://speller.yandex.net/services/spellservice.json/checkText").unwrap();
+
+    let mut url = Url::parse(SPELL_URL).unwrap();
     url.query_pairs_mut()
         .append_pair("text", text.as_ref());
 
