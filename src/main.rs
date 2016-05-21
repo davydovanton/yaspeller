@@ -1,19 +1,34 @@
 extern crate hyper;
+extern crate rustc_serialize;
 
 use std::env;
+use std::fmt;
 use std::fs::File;
 use std::io::prelude::*;
 
 use hyper::Url;
 use hyper::Client;
 
+use rustc_serialize::json;
+
 static SPELL_URL: &'static str = "http://speller.yandex.net/services/spellservice.json/checkText";
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
+#[derive(RustcDecodable)]
+struct Error {
+    code: i32,
+    pos:  i32,
+    row:  i32,
+    col:  i32,
+    len:  i32,
+    word: String,
+    s:    Vec<String>,
+}
 
-    let text = read_text(args[1].to_string());
-    println!("{}", check_text(text));
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let options: String = self.s.join(", ");
+        write!(f, "{} [{}] -> {}", self.word, self.code, options)
+    }
 }
 
 fn read_text(path: String) -> String {
@@ -37,7 +52,17 @@ fn check_text(text: String) -> String {
     let mut response = client.get(url).send().unwrap();
     assert_eq!(response.status, hyper::Ok);
 
-    let mut json = String::new();
-    response.read_to_string(&mut json).unwrap();
-    json
+    let mut body = String::new();
+    response.read_to_string(&mut body).unwrap();
+    body
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let text = read_text(args[1].to_string());
+    let errors: Vec<Error> = json::decode(&check_text(text)).unwrap();
+
+    for error in &errors {
+        println!("{}", error);
+    }
 }

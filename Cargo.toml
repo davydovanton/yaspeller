@@ -5,3 +5,4 @@ authors = ["Anton Davydov <antondavydov.o@gmail.com>"]
 
 [dependencies]
 hyper = "0.9.5"
+rustc-serialize = "0.3.19"
